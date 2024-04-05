@@ -1,0 +1,1 @@
+i%help in {len(client.guilds)} servers
