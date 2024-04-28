@@ -90,11 +90,12 @@ async def on_guild_join(guild):
   name="help",
   description="sends an embed with some helpful information",
 )
-async def help_command(interaction):
-  await interaction.response.send_message(embed=discord.Embed(
+async def help_command(interaction: discord.Interaction):
+  await interaction.response.defer()
+  await interaction.followup.send(embed=discord.Embed(
             title='help',
             description=
-            '(use </commands:1081698755218247802> for commands.) version: 1.5.2 \n\n Issue resolved. Bot should run without an issue now.',
+            '(use </commands:1081698755218247802> for commands.) version: 1.5.3 \n\n Issue resolved. Bot should run without an issue now.',
             color=5763719).add_field(name="Privacy Policy", value="Click [here](https://docs.google.com/document/d/1HbJcobW_O_P3QIrPcXaXZP3PoaPqvHNGAtPKxiLCsIc/edit?usp=sharing) to view Encourager's Privacy Policy.").add_field(name="Terms of Service", value="Click [here](https://docs.google.com/document/d/1oxim4UQxqzo0bUYICe-uWWo2nU5aFLrqC_LozUKc5fc/edit?usp=sharing) to view Encourager's Terms of Service."))
 
 @cmds.context_menu(
@@ -130,6 +131,8 @@ class Add(app_commands.Group):
   )
   async def add_sad_word(self, interaction: discord.Interaction, word: str):
 
+    await interaction.response.defer()
+
     if is_admin(interaction) == True:
       guildId = interaction.guild.id #Gets the guild ID
   
@@ -143,13 +146,13 @@ class Add(app_commands.Group):
       guildDB = db[str(guildId)]
       sWords = guildDB['sad_words']
       if any(words in word.lower() for words in sWords):
-        await interaction.response.send_message("You already added this word!", ephemeral=True)
+        await interaction.followup.send("You already added this word!", ephemeral=True)
       else:
         sWords.append(word.lower())
-        await interaction.response.send_message(f"successfully added the word **{word}** to your server's list of sad words!", ephemeral=True)
+        await interaction.followup.send(f"successfully added the word **{word}** to your server's list of sad words!", ephemeral=True)
 
     else:
-      await interaction.response.send_message("You must be an admin to use this command!", ephemeral=True)
+      await interaction.followup.send("You must be an admin to use this command!", ephemeral=True)
 
 
   #add response command
@@ -158,6 +161,8 @@ class Add(app_commands.Group):
     description="lets you add a word or phrase which the bot will respond to sad words with"
   )
   async def add_response(self, interaction: discord.Interaction, word: str):
+
+    await interaction.response.defer()
 
     if is_admin(interaction) == True:
       guildId = interaction.guild.id #Gets the guild ID
@@ -173,13 +178,13 @@ class Add(app_commands.Group):
       rWords = guildDB['responses']
   
       if any(words in word.lower() for words in rWords):
-        await interaction.response.send_message("You already added this word!", ephemeral=True)
+        await interaction.followup.send("You already added this word!", ephemeral=True)
       else:
         rWords.append(word.lower())
-        await interaction.response.send_message(f"successfully added the word **{word}** to your server's list of responses!", ephemeral=True)
+        await interaction.followup.send(f"successfully added the word **{word}** to your server's list of responses!", ephemeral=True)
 
     else:
-      await interaction.response.send_message("You must be an admin to use this command!", ephemeral=True)
+      await interaction.followup.send("You must be an admin to use this command!", ephemeral=True)
     
 #End Add class
 
@@ -197,6 +202,8 @@ class Remove(app_commands.Group):
   )
   async def add_sad_word(self, interaction: discord.Interaction, word: str):
 
+    await interaction.response.defer()
+
     if is_admin(interaction) == True:
       guildId = interaction.guild.id #Gets the guild ID
   
@@ -210,13 +217,13 @@ class Remove(app_commands.Group):
       guildDB = db[str(guildId)]
       sWords = guildDB['sad_words']
       if not any(words in word.lower() for words in sWords):
-        await interaction.response.send_message("Word could not be found.", ephemeral=True)
+        await interaction.followup.send("Word could not be found.", ephemeral=True)
       else:
         sWords.remove(word.lower())
-        await interaction.response.send_message(f"successfully removed the word **{word}** to your server's list of sad words!", ephemeral=True)
+        await interaction.followup.send(f"successfully removed the word **{word}** to your server's list of sad words!", ephemeral=True)
 
     else:
-      await interaction.response.send_message("You must be an admin to use this command!", ephemeral=True)
+      await interaction.followup.send("You must be an admin to use this command!", ephemeral=True)
 
   #remove response command
   @app_commands.command(
@@ -224,6 +231,8 @@ class Remove(app_commands.Group):
     description="lets you remove a word or phrase which the bot will respond to sad words with"
   )
   async def add_response(self, interaction: discord.Interaction, word: str):
+
+    await interaction.response.defer()
 
     if is_admin(interaction) == True:
       guildId = interaction.guild.id #Gets the guild ID
@@ -239,13 +248,13 @@ class Remove(app_commands.Group):
       rWords = guildDB['responses']
   
       if not any(words in word.lower() for words in rWords):
-        await interaction.response.send_message("Word could not be found.", ephemeral=True)
+        await interaction.followup.send("Word could not be found.", ephemeral=True)
       else:
         rWords.remove(word.lower())
-        await interaction.response.send_message(f"successfully removed the word **{word}** to your server's list of responses!", ephemeral=True)
+        await interaction.followup.send(f"successfully removed the word **{word}** to your server's list of responses!", ephemeral=True)
 
     else:
-      await interaction.response.send_message("You must be an admin to use this command!", ephemeral=True)
+      await interaction.followup.send("You must be an admin to use this command!", ephemeral=True)
 #End Remove class
 
 cmds.add_command(Remove()) #Adds Remove class commands
@@ -260,7 +269,9 @@ class List(app_commands.Group):
     name="sad-words",
     description="shows all sad words the bot will respond with in this server"
   )
-  async def add_sad_word(self, interaction: discord.Interaction):
+  async def list_sad_word(self, interaction: discord.Interaction):
+
+    await interaction.response.defer()
 
     guildId = interaction.guild.id #Gets the guild ID
 
@@ -278,7 +289,7 @@ class List(app_commands.Group):
     for i in sWords:
       wrds = wrds + i + ", "
 
-    await interaction.response.send_message(embed=discord.Embed(
+    await interaction.followup.send(embed=discord.Embed(
       title="Sad Words",
       description=wrds,
       color=5763719
@@ -290,7 +301,9 @@ class List(app_commands.Group):
     name="responses",
     description="lets you remove a word or phrase which the bot will respond to sad words with"
   )
-  async def add_response(self, interaction: discord.Interaction):
+  async def list_response(self, interaction: discord.Interaction):
+
+    await interaction.response.defer()
 
     guildId = interaction.guild.id #Gets the guild ID
 
@@ -308,7 +321,7 @@ class List(app_commands.Group):
     for i in rWords:
       wrds = wrds + i + ", "
 
-    await interaction.response.send_message(embed=discord.Embed(
+    await interaction.followup.send(embed=discord.Embed(
       title="Responses",
       description=wrds,
       color=5763719
@@ -329,6 +342,8 @@ class Toggle(app_commands.Group):
   )
   async def add_response(self, interaction: discord.Interaction, enabled: bool):
 
+    await interaction.response.defer()
+
     if is_admin(interaction) == True:
       guildId = interaction.guild.id #Gets the guild ID
   
@@ -343,13 +358,13 @@ class Toggle(app_commands.Group):
       guildDB['enabled'] = enabled
   
       if enabled:
-        await interaction.response.send_message("**Enabled** responses to sad messages!", ephemeral=True)
+        await interaction.followup.send("**Enabled** responses to sad messages!", ephemeral=True)
   
       else:
-        await interaction.response.send_message("**Disabled** responses to sad messages.", ephemeral=True)
+        await interaction.followup.send("**Disabled** responses to sad messages.", ephemeral=True)
 
     else:
-      await interaction.response.send_message("You must be an admin to use this command!", ephemeral=True)
+      await interaction.followup.send("You must be an admin to use this command!", ephemeral=True)
 
 #End Toggle class
 
@@ -370,8 +385,9 @@ async def inspire_command(interaction):
   name="commands",
   description="sends an embed with information on all of the commands the bot has",
 )
-async def commands_command(interaction):
-  await interaction.response.send_message(embed=discord.Embed(
+async def commands_command(interaction: discord.Interaction):
+  await interaction.response.defer()
+  await interaction.followup.send(embed=discord.Embed(
             title='commands',
             description=
             "**/help** \n displays some basic commands. \n **/inspire** \n sends an encouraging message to your server. \n**/commands** \nSends this embed. \n **/invite** \n use this command to invite the bot to your server or get invited to the bots server. \n **/update** \n sends you a message with information about the most recent update. \n **/bibleverse** \n use this command to get an inspiring bible verse sent to that channel. \n **/challenge** \n gives you information on the most recent challenge. \n **/add sad-word** \n use this command to add a sad word that the bot will respond to in this server. \n **/remove sad-word** \n use this command to remove a sad word that the bot will respond to in this server. \n **/list sad-words** \n use this command to list the sad words that the bot will respond to in this server. \n **/add response** \n use this command to add a response to sad words that the bot will use in this server. \n **/remove response** \n use this command to remove a response to sad words that the bot will use in this server. \n **/list responses** \n use this command to list the responses to sad words that the bot will use in this server. \n **/toggle responses** \n use this command to enable or disable responses to sad words in this server. (all sad words and responses will be saved).",
@@ -382,7 +398,8 @@ async def commands_command(interaction):
   description="sends an embed with an invite link for this discord bot",
 )
 async def invite_command(interaction):
-  await interaction.response.send_message(embed=discord.Embed(
+  await interaction.response.defer()
+  await interaction.followup.send(embed=discord.Embed(
             title='Invites',
             description='Would you like to join our server or invite our bot to your own server?',            color=5763719).set_thumbnail(url='https://cdn.discordapp.com/avatars/791768754518228992/de612a16673514fb68f76769c1ac0da5.webp?size=640').add_field(name="Bot Invite", value="Click [here](https://discord.com/api/oauth2/authorize?client_id=791768754518228992&permissions=277025614912&scope=bot%20applications.commands) to invite the bot to your server!").add_field(name="Server Invite", value="Click [here](https://discord.gg/QSGMPbm36U) to join our server!").set_footer(text="NOTE: The first 100 users to join the Discord server will get the OG User role."))
 
@@ -391,10 +408,11 @@ async def invite_command(interaction):
   description="sends an embed with information on the most recent update",
 )
 async def update_command(interaction):
-  await interaction.response.send_message(embed=discord.Embed(
+  await interaction.response.defer()
+  await interaction.followup.send(embed=discord.Embed(
             title='Most recent Update:',
             description=
-            """**More Bible Verses!** \n</bibleverse:1081701710982021225> now gets it's verses from a random bible verse generator, and therefore has a wider variety of options, whereas up to this point it's been taking from a premade list.""",
+            """**Bug Fix** \nSome commands were not properly being executed due to responses taking too long. This update aims to fix that.""",
             color=5763719))
 
 @cmds.command(
@@ -402,7 +420,8 @@ async def update_command(interaction):
   description="sends an embed with information on the current challenge",
 )
 async def challenge_command(interaction):
-  await interaction.response.send_message(embed=discord.Embed(
+  await interaction.response.defer()
+  await interaction.followup.send(embed=discord.Embed(
             title='current challenge:',
             description=f'Customization has been implemented! Our new goal is to hit 100 servers! If that happens we will not only verify the bot but we will also add a way for you to encourage a friend specifically! \n `server count: {len(client.guilds)}`',
             color=5763719
@@ -447,7 +466,7 @@ async def on_message(message):
   if message.content.startswith('^botservers'):
     await message.channel.send(f"I'm in {len(client.guilds)} servers!")
 
-  if any(word in msg.lower() for word in sWords) and status == True:
+  if any(word in msg.lower() for word in sWords) and status:
     await message.channel.send(random.choice(responses))
 
 keep_alive()
